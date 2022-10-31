@@ -7,28 +7,27 @@
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	ssize_t fild = 0, chk = 0;
+	ssize_t o, r, w;
 	char *buffer;
 
-	if (!filename || !letters)
+	if (filename == NULL)
 		return (0);
-
-	fild = open(filename, O_RDONLY);
-	if (fild < 0)
+	buffer = malloc(sizeof(char) * letters);
+	if (buffer == NULL)
 		return (0);
+	o = open(filename, O_RDONLY);
+	r = read(read(o, buffer, letters));
+	w = write(STDOUT_FILENO, buffer, r);
 
-	buffer = malloc(sizeof(char) * (letters));
-	if (!buffer)
+	if (o == -1 || r == -1 || w == -1 || w != r)
+	{
+		free(buffer);
 		return (0);
-
-	chk = read(fild, buffer, letters);
-	chk = write(STDOUT_FILENO, buffer, chk);
-	if (chk < 0)
-		return (0);
-
-	close(fild);
+	}
 	free(buffer);
-	return (chk);
+	close(o);
+	return (w);
 }
+
 
 
